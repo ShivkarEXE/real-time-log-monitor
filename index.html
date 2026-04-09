@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spark Log Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-left">
+      <div class="logo-dot"></div>
+      <div>
+        <div class="header-title">Spark Log Monitor</div>
+        <div class="header-sub">Apache Spark Structured Streaming · local[*]</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-pill">
+        <div class="dot"></div>
+        LIVE
+      </div>
+      <div class="clock" id="live-clock">--:--:--</div>
+    </div>
+  </header>
+
+  <!-- Connection error banner -->
+  <div class="conn-banner" id="conn-banner">
+    ⚠ Cannot reach API — open the dashboard via http://localhost:5000 (not as a file) and make sure spark_stream.py is running.
+  </div>
+
+  <div class="dashboard">
+
+    <!-- KPI Row -->
+    <div class="grid-row kpi-row">
+      <div class="kpi" style="--accent:var(--green)">
+        <div class="kpi-label">Total Logs</div>
+        <div class="kpi-value txt-green" id="totalLogs">0</div>
+        <div class="kpi-sub" id="logsPerSec">0 logs/s</div>
+      </div>
+      <div class="kpi" style="--accent:var(--red)">
+        <div class="kpi-label">Errors</div>
+        <div class="kpi-value txt-red" id="errorCount">0</div>
+        <div class="kpi-sub" id="errorPct">0% of total</div>
+      </div>
+      <div class="kpi" style="--accent:var(--orange)">
+        <div class="kpi-label">Warnings</div>
+        <div class="kpi-value txt-orange" id="warningCount">0</div>
+        <div class="kpi-sub" id="warningPct">0% of total</div>
+      </div>
+      <div class="kpi" style="--accent:var(--blue)">
+        <div class="kpi-label">Active Services</div>
+        <div class="kpi-value txt-blue" id="activeServices">0</div>
+        <div class="kpi-sub">auth · api · order · pay</div>
+      </div>
+    </div>
+
+    <!-- Throughput + Controls -->
+    <div class="grid-row col-2">
+      <div class="card">
+        <h2>Throughput — last 20 s</h2>
+        <div class="throughput-chart" id="throughputChart"></div>
+      </div>
+      <div class="card">
+        <h2>Controls</h2>
+        <div class="controls-btn-group">
+          <button class="btn active">All</button>
+          <button class="btn">Errors only</button>
+          <button class="btn">Warnings</button>
+        </div>
+        <div class="config-info">
+          <p>Spark trigger: <span>every 2 s</span></p>
+          <p>Schema: <span>timestamp, level, service, message</span></p>
+          <p>Source: <span>logs/ (CSV stream)</span></p>
+          <p>API: <span>localhost:5000/api/metrics</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Level Breakdown + Errors per Service -->
+    <div class="grid-row col-2">
+      <div class="card">
+        <h2>Log Level Breakdown</h2>
+        <div class="bar-chart" id="logLevelBars">
+          <p style="color:var(--muted);font-size:11px">Waiting for data…</p>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Errors per Service</h2>
+        <div class="bar-chart" id="serviceErrorBars">
+          <p style="color:var(--muted);font-size:11px">Waiting for data…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Event Stream -->
+    <div class="grid-row">
+      <div class="card event-stream-card">
+        <div class="card-header">
+          <h2>Live Event Stream</h2>
+          <div class="badge">batch #<span id="batchId">0</span></div>
+        </div>
+        <div class="table-container">
+          <table class="stream-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Level</th>
+                <th>Service</th>
+                <th>Message</th>
+              </tr>
+            </thead>
+            <tbody id="eventStreamBody">
+              <tr>
+                <td colspan="4" style="color:var(--muted);text-align:center;padding:20px">
+                  Connecting to Spark stream…
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.dashboard -->
+
+  <script src="app.js"></script>
+</body>
+</html>
